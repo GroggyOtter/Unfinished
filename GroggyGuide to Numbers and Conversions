@@ -1,0 +1,1238 @@
+This was a guide I was making to help people learn about numbers, what they represent, what "bases" are, and how we convert between them.
+------------------------------------------------------------------------------------------------------------------
+
+# Numbers
+
+Originally, this article was just about binary numbering.  
+Then it mutated into something about binary, hex, and decimal.  
+It continued to evolve into explaining numbers in general and then applying that to how binary, hex, and decimal work.  
+
+The end goal now is for the reader to be able to convert any given number from one number system to another number system.  
+Not only to convert it, but to understand how the conversion works and how numbers should be interpreted.  
+
+If given a decimal number, you should be able to change it to binary, hex, octal, or even base-64 afterward.  
+If given `0b1001010110101`, I want you to be able to convert it to decimal `4789` and hex `0x12B5` as well as understanding why the numbers `0b1001010110101`, `4789` and `0x12B5` are all the same value.  
+
+Let's talk about this stuff.  
+
+# What are numbers?
+
+It seems like a trivial question, but it's important to understand.  
+
+When I think "number", I think of "one or more symbols that represent a quantity".  
+I'll be referencing apples a lot in this guide because everyone understands what an apple is.  
+`1` apple means `🍎`.  
+`2` apples mean `🍎🍎`.  
+
+`1` and `2` are the symbols we use to represent different quantities.  
+As humans, we use a numbering system called "decimal", or a base-10 numbering system.  
+Base-10 means that 10 different symbols are used:  
+
+    0 1 2 3 4 5 6 7 8 9
+
+Each individual symbol acts as a "digit".  
+A number can be made of multiple digits and we'll get more into that later.  
+`0` is the digit we use to represent nothing.  
+`2` is the digit we use to represent two of something: `🍎🍎`  
+`10` is a number made of two digits that represents ten of something: `🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎`  
+
+Before we get into this whole number thing, I want to discuss prefixing.
+
+# Prefixing numbers
+
+A quick thing to mention is how numbers are differentiated by coders.  
+When we work with different numbering systems, we tend to prefix our numbers to identify them.  
+There are common prefixes for binary, octal, and hex values.  
+These prefixes start with a 0 and are followed by a letter identifier.  
+
+- `0b`: `b` for binary, such as: `0b1`, `0b1100`, and `0b11010110`
+- `0x`: `x` for hex,  such as: `0x1`, `0x12EF`, `0x187B52A`, and `0xDEADBEEF`
+- `0o` (Number zero then letter o): Used for octal numbers, such as: `0o1`, `0o460`, and `0o007`  
+    You probably won't see a lot of octal numbers.
+- `No prefix`: Decimal numbers generally lack any type of prefix: `0`, `5`, `17`, `420`
+
+If given the number `10`, what quantity am I talking about?  
+It depends if I mean `10`, `0b10`, or `0x10`?  
+- If it's `10`, it's this many: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎  
+- If it's `0b10`, it's this many: 🍎🍎🍎  
+- If it's `0x10`, it's this many: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎  
+
+Prefixing lets us identify numbers so there's no ambiguity about what base we're working with.  
+In mathematics, the base of a number is usually written as a subscript to the bottom right of the number.  
+So instead of `0xF1` you'd see `F1` with a subscripted `16` to the right of it.  
+
+We'll also be talking about base-64, too.  
+Base-64 isn't traditionally used as a "math" numbering system.  
+Instead, it's more of a binary-to-text encoding system we've developed.  
+It's purpose is to reduce the amount of characters needed to store data.  
+Because of that, base-64 doesn't have its own unique prefix like the others do.  
+
+# Understanding what the "base" of a number is
+
+Earlier it was stated that humans use a base-10 numbering system.  
+Maybe you've heard people talk about "base-2" or "base-64" numbers.  
+What does "base" mean in this context?  
+
+The simple answer is the base of a number system is how many unique symbols that numbering system has.  
+In our numbering system, base-10, we use these ten distinct symbols:
+
+    0 1 2 3 4 5 6 7 8 9
+
+Each of these numbers are in order of the quanity they represent.  
+
+Going back to apples, 0 is the symbol we use to express nothing.  
+If we added one apple to our nothing, we have `1` apple: `🍎`  
+If we add one more, we have `2` apples: `🍎🍎`  
+We can keep adding one until we have `9`: `🍎🍎🍎 🍎🍎🍎 🍎🍎🍎`  
+`9` is the highest quanity that can be represented by a single digit.  
+We don't have any other numbers to use in base-10.  
+To represent a quantity greater than 9, we have to use two numbers.  
+We'll discuss that in the next part.
+
+Let's make a rule about numbering systems:
+
+    Rule 1: The base of a number system is the total unique symbols that represents different quantities.  
+    The base of a number system will always be 1 greater than what can be represented with a single digit.  
+    This is because we always have one number reserved for zero or "nothing".  
+
+And we can apply this to decimal, or base-10.  
+In decimal, we have 10 unique numbers.  
+We can represent any quantity up to 9 using a single digit. And 9 is one less than the base.  
+We use `0` to represent nothing.  
+
+What if we apply this rule to binary?  
+Binary is base-2 number system.  
+It has only two unique symbos it uses:
+
+    0 1
+
+A single digit of binary can represent up to `1`.  
+This makes sense because we have only 2 symbols we can use:
+
+    0 = No apples
+    1 = 🍎
+
+Let's look at hexadecimal which is base-16.  
+It has 16 unique symbols:
+
+    0 1 2 3 4 5 6 7 8 9 A B C D E F
+
+Notice that we have `A B C D E F` symbols.  
+In hex, these are numbers, not letters.  
+We're not working with words here. We're working with quantities. Values. It's a digit.  
+The number `A`, or `0xA`, represents the same quantity as `10` does in decimal.  
+
+    0xA = 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+     10 = 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+
+Earlier, when talking about base-10, it was pointed out that we can't go past `9` because there are no more unique symbols to use.  
+In hexadecimal, we have 6 more symbols.  
+In hex, if we have `9` apples and we add one more, we have `A` apples.  
+And if we add one more, we have `B` apples.  
+We can keep adding apples up until we have `F` apples, which we would consider to be `15` in decimal.  
+At this point, we've reached the last symbol in this number system.
+
+But the point I'm trying to hit home is that each symbol represents a different quantity.  
+And we can make a quick table that shows hexadecimal vs decimal:
+
+    Hex | Dec | Quantity
+    0   | 0   | 
+    1   | 1   | 🍎
+    2   | 2   | 🍎🍎
+    3   | 3   | 🍎🍎🍎
+    4   | 4   | 🍎🍎🍎🍎
+    5   | 5   | 🍎🍎🍎🍎🍎 
+    6   | 6   | 🍎🍎🍎🍎🍎 🍎
+    7   | 7   | 🍎🍎🍎🍎🍎 🍎🍎
+    8   | 8   | 🍎🍎🍎🍎🍎 🍎🍎🍎
+    9   | 9   | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎
+    A   | 10  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    B   | 11  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎
+    C   | 12  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎
+    D   | 13  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎
+    E   | 14  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎🍎
+    F   | 15  | 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+
+Some of you might be thinking "could you include more symbols and make a bigger base?"  
+YES! You could add the whole alphabet and make a base-36 number system.  
+You'd have the numbers 0 through 9 plus the letters A through Z.  
+And this is actually how base-64 works.  
+
+Let's apply the rule we made earlier to base-64.  
+Base-64 means we have sixty-four unique symbols to use.  
+It's important to understand that these are listed in quantity order.  
+It's paramount to know the correct order of symbols or you can't use that number-system correctly.  
+
+    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + /
+
+Notice that the very first number is `A`?  
+That means `A` is the symbol used to represent a quantity of nothing.  
+When working with base-64, if we have `A` apples, we have no apples.  
+We do not use `0` like in decimal and hex because 0 represents a different quantity in base-64.  
+
+If we have `B` apple, we have this many: `🍎`  
+If we add one more, we have `C` apples: `🍎🍎`  
+But if we were to say we have `0` apples, we're saying we have a quantity equal to `52` in base-10:  
+
+    0 in base-64 = 52 in base-10:
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎
+
+How about we make a table that lists all the symbols of base-64 as well as base-2, 10, and 16.  
+There's also going to be a "quantity" column to show the quantity of vapples being represented.  
+
+**Note that red apples 🍎 represent a single apple while green apples 🍏 represent ten red apples.**  
+
+    Base-10     Base-2      Base-16     Base-64     Quantity:
+                                        
+    0           000000      0x00        A           
+    1           000001      0x01        B           🍎
+    2           000010      0x02        C           🍎🍎
+    3           000011      0x03        D           🍎🍎🍎
+    4           000100      0x04        E           🍎🍎🍎🍎
+    5           000101      0x05        F           🍎🍎🍎🍎🍎
+    6           000110      0x06        G           🍎🍎🍎🍎🍎🍎
+    7           000111      0x07        H           🍎🍎🍎🍎🍎🍎🍎
+    8           001000      0x08        I           🍎🍎🍎🍎🍎🍎🍎🍎
+    9           001001      0x09        J           🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    10          001010      0x0A        K           🍏
+    11          001011      0x0B        L           🍏🍎
+    12          001100      0x0C        M           🍏🍎🍎
+    13          001101      0x0D        N           🍏🍎🍎🍎
+    14          001110      0x0E        O           🍏🍎🍎🍎🍎
+    15          001111      0x0F        P           🍏🍎🍎🍎🍎🍎
+    16          010000      0x10        Q           🍏🍎🍎🍎🍎🍎🍎
+    17          010001      0x11        R           🍏🍎🍎🍎🍎🍎🍎🍎
+    18          010010      0x12        S           🍏🍎🍎🍎🍎🍎🍎🍎🍎
+    19          010011      0x13        T           🍏🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    20          010100      0x14        U           🍏🍏
+    21          010101      0x15        V           🍏🍏🍎
+    22          010110      0x16        W           🍏🍏🍎🍎
+    23          010111      0x17        X           🍏🍏🍎🍎🍎
+    24          011000      0x18        Y           🍏🍏🍎🍎🍎🍎
+    25          011001      0x19        Z           🍏🍏🍎🍎🍎🍎🍎
+    26          011010      0x1A        a           🍏🍏🍎🍎🍎🍎🍎🍎
+    27          011011      0x1B        b           🍏🍏🍎🍎🍎🍎🍎🍎🍎
+    28          011100      0x1C        c           🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎
+    29          011101      0x1D        d           🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    30          011110      0x1E        e           🍏🍏🍏
+    31          011111      0x1F        f           🍏🍏🍏🍎
+    32          100000      0x20        g           🍏🍏🍏🍎🍎
+    33          100001      0x21        h           🍏🍏🍏🍎🍎🍎
+    34          100010      0x22        i           🍏🍏🍏🍎🍎🍎🍎
+    35          100011      0x23        j           🍏🍏🍏🍎🍎🍎🍎🍎
+    36          100100      0x24        k           🍏🍏🍏🍎🍎🍎🍎🍎🍎
+    37          100101      0x25        l           🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎
+    38          100110      0x26        m           🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎
+    39          100111      0x27        n           🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    40          101000      0x28        o           🍏🍏🍏🍏
+    41          101001      0x29        p           🍏🍏🍏🍏🍎
+    42          101010      0x2A        q           🍏🍏🍏🍏🍎🍎
+    43          101011      0x2B        r           🍏🍏🍏🍏🍎🍎🍎
+    44          101100      0x2C        s           🍏🍏🍏🍏🍎🍎🍎🍎
+    45          101101      0x2D        t           🍏🍏🍏🍏🍎🍎🍎🍎🍎
+    46          101110      0x2E        u           🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎
+    47          101111      0x2F        v           🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎
+    48          110000      0x30        w           🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎
+    49          110001      0x31        x           🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    50          110010      0x32        y           🍏🍏🍏🍏🍏
+    51          110011      0x33        z           🍏🍏🍏🍏🍏🍎
+    52          110100      0x34        0           🍏🍏🍏🍏🍏🍎🍎
+    53          110101      0x35        1           🍏🍏🍏🍏🍏🍎🍎🍎
+    54          110110      0x36        2           🍏🍏🍏🍏🍏🍎🍎🍎🍎
+    55          110111      0x37        3           🍏🍏🍏🍏🍏🍎🍎🍎🍎🍎
+    56          111000      0x38        4           🍏🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎
+    57          111001      0x39        5           🍏🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎
+    58          111010      0x3A        6           🍏🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎
+    59          111011      0x3B        7           🍏🍏🍏🍏🍏🍎🍎🍎🍎🍎🍎🍎🍎🍎
+    
+    60          111100      0x3C        8           🍏🍏🍏🍏🍏🍏
+    61          111101      0x3D        9           🍏🍏🍏🍏🍏🍏🍎
+    62          111110      0x3E        +           🍏🍏🍏🍏🍏🍏🍎🍎
+    63          111111      0x3F        /           🍏🍏🍏🍏🍏🍏🍎🍎🍎
+
+Hopefully, this help to visualize things.  
+
+## Extra info about some of these terms
+
+Some extra fun stuff about number bases before going to the next section about why we use columns and how positional numbering works.
+
+Some additional fun facts:  
+- Another name you might hear "base" called is "radix" or "radices" (plural).  
+    Radix is essentially the same thing as base.  
+    If a number system is base-10, then it has a radix of 10.  
+    If something supports base-2, base-10, and base-16, then it supports radices 2, 10, and 16.  
+- Radix is a Latin word that literally translates to "root", as the individual numbers of a numbering system make up the root of it.
+- Decimal comes from the Latin "decimus" which means "tenth".  
+    Decimal uses 10 numbers.  
+- Hexadecimal is kind of a bastardization as it has the Greek prefix "hexa" for six and the Latin "decimal" for tenths, meaning "six + tenths", hence it being base-16.  
+    Maybe they didn't like the sound of sexadecimal?  
+- Why do humans use base-10?  
+    Simple. Look down at your hands.  
+    Our hands were our calculators long before any math tools were so we learned to count by tens.  
+- A base-1 system *could* exist but would be pretty impractical and would instead be akin to using "tally marks" or "ticks".  
+    There is also no practical way of representing the quantity 0 as only one number exists.  
+    - 1 = 1
+    - 11 = 2
+    - 11111 = 5
+    - 1111111111 = 10
+
+# Part 2: Understanding the positional structure of a number
+
+Now that we understand the base of a number, let's talk about how we use mutliple digits to represent larger quantities.  
+A number is made up of multiple "columns".  
+The number `12` has two columns of digits.  
+The number `2026` has four columns of digits.  
+
+When we use multi-digit numbers like this, we're using "positional notation".  
+
+Let's go back to base-10.  
+We said `9` is the highest quantity we can represent with a single digit.  
+So how do we handle adding one more apple?  
+The answer is we add another column to the number.  
+When a column gets added to a number, it represents how many times the previous column has been "filled up".  
+
+In base-10, we call the first column the "ones" column.  
+When it's at `9`, we can't represent a higher number.  
+If we add `1`, we have to create a new column that we call a "tens" column.  
+The ones column resets back to its starting value of `0`.  
+And a one is added to, or "carried over", to the tens column.  
+And we get something like this:
+
+    COLUMNS         QUANTITIES
+    Tens | Ones
+              9     🍎🍎🍎🍎🍎 🍎🍎🍎🍎
+    +         1     🍎
+    ============
+       1      0     🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+
+I know some people are thinking "why am I reading this...it's so obvious!"  
+Maybe it is and if so, you can always skip down to the next section.  
+I'm concerned about people thinking of numbers as a linear thing.  
+A neverending row of numbers:  
+
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ->  
+1000, 1001, 1002, 1003, 1004, 1005, 1006...  
+
+It's not WRONG to think of numbers that way.  
+That's how numbers progress in base-10.  
+And when visualizing number lines, we're shown stuff like this:  
+
+    ...  -10  -9  -8  -7  -6  -5  -4  -3  -2  -1  0  1  2  3  4  5  6  7  8  9  10  ...
+
+It's easy to get stuck in the mindset of thinking the number `100` is the number that comes after `99`.  
+The problem is that this only works with base-10.  
+In base-16, `9A` comes after `99`.  
+In base-2, nothing comes after after `99` because `99` can't exist in base-2.  
+
+Thinking of numbers in a linear sense can only apply to a specific base numbering system.  
+Humans are comfortable with it because we ALL work with base-10 all the time.  
+So if I ask a person "what comes after 99?" almost universally I'll be told "100".  
+
+But understanding the base and the positional value of a number means you can understand ALL number systems.  
+
+We follow the same rule.  
+The first column always represents your individual quantities.  
+Each column to the left represents how many times you've "filled up" the column to the right.  
+
+Going back to base-10, let's break down the number `219` apples.  
+The `9` is individual apples, or "ones".  
+The `1` is how many full group of ones, or "tens", that have been filled up.  
+In this case, the ones have been filled up one time for a total of 10 apples.  
+The `2` is the full groups of tens, or "hundreds".  
+We could say we filled up the tens column twice.  
+Or we could say we filled up the ones column twenty times.  
+It's just different ways of saying the same thing.  
+In essence, 219 represents:
+
+    200 apples
+   + 10 apples
+   +  9 apples
+
+If the number were `34`, it would mean we have 3 complete sets of ten and four more singles.  
+    
+    30
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    
+    4
+    🍎🍎🍎🍎
+
+There is no limit to how many columns that can be added.  
+If we had `99` apples and added one more, what happpens?  
+The ones column "fills up" and gets reset.  
+We carry one complete group over to the next column (tens).  
+The tens column already has 9, so add one fills it up.  
+The tens column resets back to 0 and we carry one over to the next column (hundreds).  
+
+    Hundreds | Tens | Ones
+                  9      9
+    +                    1
+    =======================
+           1      0      0
+
+Once we get to `999` we expand to four digits `1000`.  
+Then to five digits `10000` then to six digits `100000`.  
+And we can continue adding as many columns as we want.  
+
+So let's make or second rule:
+
+    Rule 2: When a column becomes full, the column is reset to its starting digit.  
+    One is added to the next column to represent a "full" column of the previous digit.  
+    This is also known as "carrying over".
+
+This positional notation applies to ALL numbering systems.  
+Let's apply what we've learned about base numbers and about columns to binary.  
+
+# Learning binary with the rules
+
+Using the previous 2 rules we learned, we can no apply those to binary.  
+Rule one:
+
+    The base of a number system is the total unique symbols that represents different quantities.  
+    The base of a number system will always be 1 greater than what can be represented with a single digit.  
+
+Binary is a base-2 numbering system.  
+Here are the 2 unique symbols used in binary, in proper order:
+
+    0 1
+
+In binary, `0` represents nothing and `1` represents a quantity of one.  
+That's the only two unique symbols we have to use.  
+The greatest value we can represent with a single digit is `1`.  
+
+We start out with `0` apples, or no apples.  
+If we add an apple to the pile, we now have 1 apple:
+
+       0
+    +  1    🍎
+    =====
+       1    🍎
+
+If we have one apple and we add another apple, what happens?  
+We can't go up to `2`. The symbol `2` doesn't exist in binary.  
+Instead, we have to follow rule two:
+
+    When a column becomes full, the column is reset to its starting digit.  
+    One is added to the next column to represent a "full" column of the previous digit.  
+
+The first column of any number system is always going to be the indvidual quantities or what we would call the "ones".  
+Because "one" is what we can an individual quantity of something.  
+
+Binary also treats this column as the ones column.  
+The second column is where things change.  
+If we fill up the ones column, it means it's at 1. That's the highest it can go.  
+And if we were to add one more to it, it fills it up.  
+The next column is the twos column.  
+
+    Twos | Ones
+              1    🍎
+    +         1    🍎
+    ============
+       1      0    🍎🍎
+
+And if we add another?
+
+    Twos | Ones
+       1      0    🍎🍎
+    +         1    🍎
+    ============
+       1      1    🍎🍎🍎
+
+And one more...
+
+    Fours | Twos | Ones
+               1      1    🍎🍎🍎
+    +                 1    🍎
+    ====================
+        1      0      0    🍎🍎🍎🍎
+
+We're simply following the same rules.  
+We're using only the unique symbols we have.  
+And when a column gets filled up, we add a new one.  
+
+This applies to ALL number systems.  
+
+And understanding the column structure (positional structure) of numbers means knowing how to convert between number systems.  
+In decimal, the columns represent ones, then tens, then hundreds, then thousands.  
+Notice that each column is x10 more than the previous one?  
+We can say it's *base* times more.  
+
+    Thousands | Hundreds | Tens | Ones
+         1000 |      100 |   10 |    1
+       100*10 |    10*10 | 1*10 |
+
+The same applies to binary:
+
+    Eights | Fours | Twos | Ones
+         8 |     4 |    2 |    1
+       4*2 |   2*2 |  1*2 |
+
+A more accurate way to think of it is each column is the base raised to a power, where the power is the column number starting at 0.  
+
+Meaning for deicmal:
+
+    Thousands | Hundreds | Tens | Ones
+         10^3 |     10^2 | 10^1 | 10^0
+         1000 |      100 |   10 |    1
+    
+And for binary:
+
+    Eights | Fours | Twos | Ones
+       2^3 |   2^2 |  2^1 |  2^0
+         8 |     4 |    2 |    1
+
+This is why I wanted to make sure you understood the structure of numbers.  
+You know that there are only two unique symbols in binary: `0` and `1`  
+And you also know what each column of a binary number represents.  
+
+With this knowledge, you can convert between binary and decimal numbers.  
+When given a binary number such as `101101`, you know what decimal value this is b/c you understand the rules we've established.  
+To make things easy, write out what you know and use it as a cheat sheet.  
+We know what each column of a binary number represents.  
+So we create a cheat sheet then write the binary number below it.
+
+    Binary column values:   32 | 16 | 8 | 4 | 2 | 1
+    Plug in the number:      1    0   1   1   0   1
+
+Add up all the columns that have a non-zero value.  
+
+    32 + 8 + 4 + 1 = 45
+
+We just converted binary `101101` to `45` in decimal.
+
+Let's do one more just to be sure.  
+`1000101` has 7 digits.  
+We create a cheat sheet going 7 columns out.
+
+    64    32    16    8    4    2    1
+
+Now write the binary number beneath it.
+
+    64    32    16    8    4    2    1
+    ===================================
+     1     0     0    0    1    0    1
+
+We have 3 columns with non-zero values.  
+* One group of 64.  
+* One group of 4.  
+* One group of 1.  
+
+Add them together:
+
+    64 + 4 + 1 = 69
+
+We were able to convert `0b1000101` to decimal `69`. Nice!  
+
+If the binary number is bigger, such as 10 digits, then extend the cheat sheet to include 10 columns:
+
+    512    256    128    64    32    16    8    4    2    1
+
+We've converted from binary to decimal so let's go the other direction and do decimal to binary.  
+Let's say we have `377` apples but we want to represent it in binary format.  
+We create another cheat sheet using the binary setup.  
+But this time, we keep adding columns until the current columns value is greater than the number we're converting.  
+In this case, we need 10 columns.  
+The 9th column in binary is worth 256. That's less than 377.  
+The 10th column is 512, which is more than 377.  
+Here are the first 10 columns of our binary cheat sheet:
+
+    512    256    128    64    32    16    8    4    2    1
+
+Now to convert the decimal number to binary, we go from left to right through our cheat sheet and we check to see if that number can be pulled from our number.  
+The first column represents 512. Can we take a group of 512 from 377?  
+No. So that column is a zero. (Some of you may have realized that the first column will **always** be a zero b/c we always ensure it's larger than the number we're converting).  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0
+
+Proceed to the next column.  
+It represents the quantity 256.  
+Can we pull a full group of 256 from the number 377?  
+Yes! We can pull 1 group of 256 from 377.  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1
+
+Nowe we update the ramining apples.  
+We've accounted for 256 of them, so how many do we have left to account for?  
+
+    377 - 256 = 121
+
+We still have 121 apples that aren't represented yet.  
+The next column represents the quantity 128.  
+Can a full group of 128 apples be taken from 121?  
+No, so we put a 0 in that column.  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0
+
+And the next column represents 64.  
+Yes, we're able to make a full group of 64 from 121, so we put 1 in that column:
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1
+
+We need to update our apple count to see how many are unaccounted for:
+
+    121 - 64 = 57
+
+57 apples left.  
+And we continue down the line.  
+One group of 32 can be taken from 57.
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1     1
+
+Update remaining number: `57 - 32 = 25`  
+Next, 16 can be pulled from 25.  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1     1     1
+
+Update number: `25 - 16 = 9`  
+8 can be pulled from 9, leaving 1.
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1     1     1    1
+
+Neither 4 or 2 can be pulled from 1, so both of those columns get a zero.  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1     1     1    1    0    0
+
+And finally, 1 can be pulled from 1.  
+
+    512    256    128    64    32    16    8    4    2    1
+    ========================================================
+      0      1      0     1     1     1    1    0    0    1
+
+The conversion is finished because we have no "remaining apples" to account for.  
+In fact, it's impossible to ever have a "remainder" when you're done and if there is one, it's confirmation an error was made.
+
+We've successfully determined that decimal `377` is the same as `0101111001` in binary.  
+They both represent the same quantity of something, but are represented using different number systems.  
+
+When it comes to converting numbers, it's all about making a column cheat sheet.  
+In the next section, we're going to apply all of this to hex.  
+We're going to use the exact same process we did with binary.  
+
+# Learning hexadecimal
+
+Hexadecimal is a base-16 number system.  
+It has 16 unique numbers.  
+Here they are, in order:
+
+    0 1 2 3 4 5 6 7 8 9 A B C D E F
+
+A single digit can represent values between 0 and 15.  
+
+In decimal, we go from `9` to `10` because we have no more symbols to use after `9`.  
+That's not the case with hex.  
+Hex has 6 numbers after `9`, represented by `A B C D E F`.  
+
+- Hex `0xA` is `10` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+- Hex `0xB` is `11` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎
+- Hex `0xC` is `12` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎
+- Hex `0xD` is `13` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎
+- Hex `0xE` is `14` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎🍎
+- Hex `0xF` is `15` in decimal: 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+
+It's not until we reach `F` apples that we need to create a new column.  
+Meaning each column is 16 times bigger than the previous one.  
+If we have `0xF` apples and we add one more:  
+
+    Sixteens | Ones
+                  F    🍎🍎🍎🍎 🍎🍎🍎🍎 🍎🍎🍎🍎 🍎🍎🍎
+    +             1    🍎
+    ================
+           1      0    🍎🍎🍎🍎 🍎🍎🍎🍎 🍎🍎🍎🍎 🍎🍎🍎🍎
+
+It's the same thing we've been doing with binary and decimal.  
+The only thing that's changing is the value of each column.  
+If we're making a cheat sheet for hex, it looks like this:  
+
+    4096 | 256 | 16 | 1
+
+Each column is x16 bigger than the previous.  
+Let's start by converting the hex value `0xFADE` to decimal.  
+Hex can be fun because a number might look like a word.  
+But remember that these aren't letters. They're symbols that represent a quantity.  
+
+Let's plug our hex number into the cheat sheet we just created.
+
+    4096 | 256 | 16 | 1
+    ====================
+       F     A    D   E
+
+Now each column is added up.  
+
+The 4th column is the groups of 4096:  
+F (or 15) groups of 4096: 15 * 4096 = 61440
+
+The 3rd column is the groups of 256:  
+A (or 10) groups of 256: 256 * 10 = 2560
+
+The 2nd column is the groups of 16:  
+D (or 13) groups of 16: 13 * 16 = 208
+
+The 1st column is the groups of 1:  
+E (or 14) groups of 1: 1 * 14 = 14
+
+Add them together:
+
+    61440 + 2560 + 208 + 14 = 64222
+
+That means the hex value `0xFADE` represents the same quantity as `64222` in decimal.  
+
+What if we want to go the other direction?  
+Let's convert decimal `9897` to hex.  
+We're doing the exact same thing we did with binary.  
+Make a cheat sheet for base 16 and keep going until the column number is bigger.  
+In this case we'll need 5 columns because 4 columns only gives us 4096 and we need it to be greater than 9897:  
+
+    65536    4096    256    16    1
+
+Now that we have our cheat sheet written, we can start converting.  
+We go left to right, pulling groups from our number.  
+We can't pull 65536 from 9897, so it gets a zero.  
+
+    65536    4096    256    16    1
+        0
+
+In the next colun, we can take 4096 from 9897 two times.  
+
+    65536    4096    256    16    1
+        0       2
+
+We update the reamining number: 9897 - 4096 - 4096 = 1705  
+Moving to the next column, we can make a group of 256 from 1705.  
+In fact, we can make 6 groups of 256 from 1705.  
+
+    65536    4096    256    16    1
+        0       2      6
+
+6 groups of 256 is 1536.  
+Update the remainder: 1705 - 1536 = 169  
+With 169 remaining, we move to the next column.  
+How many full groups of 16 can we take out of 169?  
+In decimal, we'd say `10` groups but this is hex, so we say we can take `A` groups of 16 from 169.  
+
+    65536    4096    256    16    1
+        0       2      6     A
+
+Update remainder: 169 - (16 * 10) = 9  
+And that leaves us with 9 "ones" that can go in the final column.  
+We have our final conversion:  
+
+    65536    4096    256    16    1
+        0       2      6     A    9
+
+The value `9897` decimal converts to hexadecimal `0x26A9`.  
+
+Are things starting to make sense?  
+Are you seeing numbers in a slightly different light?  
+
+Again, all it takes is understanding the base number and understanding the value of each column (position).  
+
+What if I told you that converting decimal is the hardest one.  
+Converting between hex, octal, and binary is a breeze because they're all powers of 2.  
+Because of this, when converting from decimal to hex, most people will instead opt to convert to binary first.  
+This is because converting from decimal to binary tends to be easier and converting from binary to hex is a ridiculously simple task.  
+And we'll be talking about it next.  
+
+# Converting between hex and binary
+
+The big thing to realize is that binary is base-2, hex is base-16, and both 2 and 16 are powers of two.  
+That makes converting between the two EXTREMELY easy.  
+Every hex value can be expressed as 4 bits (4 binary numbers).  
+And any 4 binary bits can be expressed as a single hex number.  
+
+What's the highest number you can make with 4 binary numbers?  
+
+    8    4    2    1
+    =================
+    1    1    1    1
+
+Add those up:
+
+    8 + 4 + 2 + 1 = 15
+
+That means binary 0000 to 1111 is the same as 0 through 15.  
+Hex 0x0 to 0xF is the same as 0 through 15.  
+This is exactly why it's so easy.  
+
+This table pretty much sums things up:
+
+| Hex   | Binary    | Decimal   |
+| :--   | :--       | :--       |
+| 0     | 0000      | 0         |
+| 1     | 0001      | 1         |
+| 2     | 0010      | 2         |
+| 3     | 0011      | 3         |
+| 4     | 0100      | 4         |
+| 5     | 0101      | 5         |
+| 6     | 0110      | 6         |
+| 7     | 0111      | 7         |
+| 8     | 1000      | 8         |
+| 9     | 1001      | 9         |
+| A     | 1010      | 10        |
+| B     | 1011      | 11        |
+| C     | 1100      | 12        |
+| D     | 1101      | 13        |
+| E     | 1110      | 14        |
+| F     | 1111      | 15        |
+
+When converting a hex value to binary, each hex value will convert to a 4 digit binary number.  
+In the previous section we used `0xFADE` as an exmaple. Let's use it again.
+
+Convert each digit into its binary equivalent.  
+`F` is represented as `1111` in binary.  
+`A` is `1010`.  
+`D` is `1101`.  
+`E` is `1110`.  
+
+Connect them all together: `1111 1010 1101 1110`.  
+You've just converted hex `0xFADE` to binary `1111101011011110`.  
+
+Another way to look at it:
+
+    Hex:    F    A    D    E
+    Bin: 1111 1010 1101 1110
+
+Let's do the hex value `0x1337`.  
+Convert each hex value to its binary equivalent.
+
+    Hex:    1    3    3    7
+    Bin: 0001 0011 0011 0111
+
+`0x1337` converts to `0b1001100110111`.  
+
+Next, let's go the other direction and convert a binary number to hex.  
+We'll start with a longer binary number: `0b11111010110111101101010000100000`  
+We know that every 4 bits of a binary number and be represented by a hex value.  
+Going from right to left, break the binary number up into groups of 4:
+
+    1111 1010 1101 1110 1101 0100 0010 0000
+
+Now convert each group of four bits to its hex equivalent and you get this:
+
+    1111    1010    1101    1110    1101    0100    0010    0000
+       F       A       D       E       D       4       2       0
+
+So `0b11111010110111101101010000100000` simply converts to hex `0xFADED420`.  
+
+Converting back and forth between binary and hex is just that easy.  
+Now let's reinforce what we've learned and convert the hex value `0xFADED420` to decimal.  
+Do we want to do it using hex or binary?  
+It would probably be easier to use the binary number, but we can do both.  
+
+For hex, our value is 8 hex digits.  
+So we make a cheat sheet that's 8 columns wide.  
+Start at one and make each column x16 more than the previous one.  
+
+    268435456    16777216    1048576    65536    4096    256    16    1
+
+Now add the numbers to the cheat sheet.  
+
+    268435456    16777216    1048576    65536    4096    256    16    1    
+            F           A          D        E       D      4     2    0
+
+Calculate how much each "group" represents:
+
+    268435456 * 15 (F) = 4026531840
+     16777216 * 10 (A) =  167772160
+      1048576 * 13 (D) =   13631488
+        65536 * 14 (E) =     917504
+         4096 * 13 (D) =      53248
+          256 * 4      =       1024
+           16 * 2      =         32
+            1 * 0      =          0
+
+And to get the final answer, we add it all up:
+
+      4026531840
+       167772160
+        13631488
+          917504
+           53248
+            1024
+              32
+    +          0
+    =============
+      4208907296
+
+But what if we wanted to use the binary number instead?  
+`1111 1010 1101 1110 1101 0100 0010 0000`  
+That's 32 digits. Or in binary, we'd say 32 bits.  
+So make a binary cheat sheet that's 32 digits long.
+
+    2147483648 | 1073741824 | 536870912 | 268435456 | 134217728 | 67108864 | 33554432 | 16777216 | 8388608 | 4194304 | 2097152 | 1048576 | 524288 | 262144 | 131072 | 65536 | 32768 | 16384 | 8192 | 4096 | 2048 | 1024 | 512 | 256 | 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1
+             1            1           1           1           1          0          1          0         1         1         0         1        1        1        1       0       1       1      0      1      0      1     0     0     0    0    1    0   0   0   0   0
+
+Or maybe envision it like this:  
+
+    1 | 2147483648
+    1 | 1073741824
+    1 | 536870912
+    1 | 268435456
+    
+    1 | 134217728
+    0 | 67108864
+    1 | 33554432
+    0 | 16777216
+    
+    1 | 8388608
+    1 | 4194304
+    0 | 2097152
+    1 | 1048576
+    
+    1 | 524288
+    1 | 262144
+    1 | 131072
+    0 | 65536
+    
+    1 | 32768
+    1 | 16384
+    0 | 8192
+    1 | 4096
+    
+    0 | 2048
+    1 | 1024
+    0 | 512
+    0 | 256
+    
+    0 | 128
+    0 | 64
+    1 | 32
+    0 | 16
+    
+    0 | 8
+    0 | 4
+    0 | 2
+    0 | 1
+
+And finally add them together:  
+
+     2147483648
+     1073741824
+      536870912
+      268435456
+      134217728
+       33554432
+        8388608
+        4194304
+        1048576
+         524288
+         262144
+         131072
+          32768
+          16384
+           4096
+           1024
+    +        32
+    ============
+     4208907296
+
+We get the same result.  
+And we've just proven that decimal `4208907296` is equal to binary `0b11111010110111101101010000100000` which is equal to hex `0xFADED420`.  
+
+It's all different ways to represent the same quantities of stuff.  
+
+## Fun binary terms:  
+
+Binary numbers have some fun names.  
+As stated earlier, a single binary digit is called a bit.  
+Each hex value is 4 bits and we call that a nibble.  
+In other words, every 4 bits or every single hex value represents a "nibble" worth of data.  
+8 bits is called a byte.  
+Or to put it in other words, two nibbles make a byte.  
+Who says programmers don't have a sense of humor?  
+
+# Learning about base-64
+
+Base-64 is exactly what it sounds like.  
+It's a numbering system where there are 64 unique symbols.  
+This is the full number set used in base 64:
+
+    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + /
+
+Like all number lists I've provided, this is in order.  
+
+Or if we included their decimal values:
+
+    Base-64 | Base-10
+    --------+---------
+    A       | 0
+    B       | 1
+    C       | 2
+    D       | 3
+    E       | 4
+    F       | 5
+    G       | 6
+    H       | 7
+    I       | 8
+    J       | 9
+    K       | 10
+    L       | 11
+    M       | 12
+    N       | 13
+    O       | 14
+    P       | 15
+    Q       | 16
+    R       | 17
+    S       | 18
+    T       | 19
+    U       | 20
+    V       | 21
+    W       | 22
+    X       | 23
+    Y       | 24
+    Z       | 25
+    a       | 26
+    b       | 27
+    c       | 28
+    d       | 29
+    e       | 30
+    f       | 31
+    g       | 32
+    h       | 33
+    i       | 34
+    j       | 35
+    k       | 36
+    l       | 37
+    m       | 38
+    n       | 39
+    o       | 40
+    p       | 41
+    q       | 42
+    r       | 43
+    s       | 44
+    t       | 45
+    u       | 46
+    v       | 47
+    w       | 48
+    x       | 49
+    y       | 50
+    z       | 51
+    0       | 52
+    1       | 53
+    2       | 54
+    3       | 55
+    4       | 56
+    5       | 57
+    6       | 58
+    7       | 59
+    8       | 60
+    9       | 61
+    +       | 62
+    /       | 63
+
+In base-64, if you have `A` apples, you have no apples.  
+If you have `9` apples in base-64, you have decimal `61` apples.  
+And if you have `10` apples in base-64, you have decimal `3444` apples.  
+It seems weird because 0 through 9 have completely different meanings in base-64.  
+Write out the columns.
+
+    4096 | 64 | 1
+
+Add the values:
+
+    4096 | 64 | 1
+       0 |  1 | 0
+
+The trick here is to respect the order of the symbols used in base-64.  
+In base-10, `0` is the first symbol and represents nothing.  
+In base-64, `A` is the first symbol and represents nothing.  
+In base-64, the symbol `0` is the 53rd symbol in the number system. It represents the decimal quantity `52`.  
+As long as that "order" is respected, all the converting is the same.  
+
+With `10` in base-64, we're saying the first column has 1 groups of 64 (or decimal 53 groups of 64).  
+And the second column has 0 groups of of 1 (or 52 groups of 1).  
+
+   2nd column   1st column
+   (64 * 53)  + 52         = 3444
+
+So yes, `10` in base-64 is the same as `3444` in decimal.  
+
+# Making a numbering system
+
+I keep favoring the word "symbol" to describe individual "numbers" because it really is just a symbol.  
+A glyph, if you will.  
+And this is why I keep using apple examples.  
+Instead of me saying "fifty-three apples" which is a decimal-based number, I can visually show you that quantity of apples.  
+
+In base-10, the symbol `1` represents this quantity:
+
+    🍎
+
+While in base-64, the symbol `1` represents this quantity:  
+
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎🍎🍎 🍎🍎🍎🍎🍎
+    🍎🍎🍎
+
+To reinforce this, we could redo our base-10 system to make emojis into numbers.  
+Let's pick 10 random emojis and give them the same values as our 0 through 9 system.  
+
+    Base-10   Base-10-Emoji
+          0 = 😀
+          1 = 😁
+          2 = 😂
+          3 = 🤣
+          4 = 😏
+          5 = 😎
+          6 = 😅
+          7 = 😆
+          8 = 😋
+          9 = 😄
+
+If we have `😎` apples, it means we have: `🍎🍎🍎🍎🍎`  
+In our new number system called base-10-e, the symbol `😎` represents the quantity `5`.  
+What about the number `10`?  
+We'd use `😁😀`.  
+
+And if you saw `😏 * 😄 = 🤣😅`?  
+Well that's the same as writing `4 * 9 = 36` in normal base-10.  
+
+Or we could turn binary from `0 1` into `A B`.  
+
+If we have `A` apples we have no apples.  
+If we have `BAA` apples, we have `🍎🍎🍎🍎` apples.  
+The whole point is that it's just symbols used to represent different quantities.  
+
+# They taught this in school
+
+Where I went to school, we were actually taught this.  
+I just never really put it together the way that I do now.  
+
+We used to have to these "blocks" to represent different quantities.  
+The single cubes represented "ones".  
+Then there were sticks that represented "tens" because they were ten cubes long.  
+And then there were the pancakes that were 10 cubes by 10 cubes for "hundreds.  
+
+They looked like this:
+
+               __   __   __   __   __   __   __   __   __   __
+    Ones:     |__| |__| |__| |__| |__| |__| |__| |__| |__| |__|
+    
+               __ __ __ __ __ __ __ __ __ __
+    Tens:     |__|__|__|__|__|__|__|__|__|__|
+    
+               __ __ __ __ __ __ __ __ __ __
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+    Hundreds: |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+              |__|__|__|__|__|__|__|__|__|__|
+
+I now realize that they were trying to teach the same concept I just wrote about, but the way they taught it didn't land right with me.  
+It wasn't until I learned binary that my perception of numbers shifted and I started seeing them different.  
+
+I'm kind of hoping that some of you reading have a different view of numbers and maybe understand them better now.  
+
+# Binary data and DllCall()
+
+Seems like this article should inclue some AHK content.  
+So let's talk about binary and how we use it with `DllCall()`.
+
+One of the reasons people struggle with DllCall is because they don't understand binary or the terms used for data types.  
+I'm hoping that after reading this that you, the reader, won't have this problem.  
+
+First, you'll notice the parameters of DllCalls are odd b/c each each value passed in also includes its "type".  
+The "type" describes how many bits there are in the piece of data you're passing in.  
+A piece of data can be an int or a char or a float.  
+Then there are "unsigned" variants, too.  
+
+This is going to all go back to what we just learned about binary earlier.  
+
+Let's start by talking talk about the `char` data type.  
+A char is a "character" and it is the smallest data type.  
+Chars are one byte, or eight bits.  
+How much is that?  
+If we write out a cheat sheet for 8 bits, it'll show us:
+        
+    128 64 32 16 8 4 2 1
+
+That means we have 256 different values we can represent. `0` through `255`, with `0b00000000` being 0 and `0b11111111` being 255.
+That means if we have a value that falls between 0 and 255, we could easily use a char.  
+A good example of a piece of data that could use a char is human age.  
+Even the longest living humans don't live past 130, let alone 255, so a char would be appropriate to use.  
+
+Let's go to another commonly 
+
+When you start working with DllCalls, you 
+We don't do this in AHK b/c AHK numbers are all uint64.  
+
+Even if we only need to represent true/false for a variable, it's still 
+
+
+
+
+
+When you're working with Dlls, you have to understand what they want for each parameter.  
+Each parameter is going to expect a different set of bytes to work with.  
+In AHK, all variables are the same size. We don't worry about int and uint and char and all the different sized smaller bytes.  
+When working with DllCalls, you DO have to worry about those.  
+
+To recap, a bit is a single binary digit. `1` or `0`.  
+A bytes is 8 bits: `00000000` to `11111111`  
+That means 8 columns.  
+You can make a cheat sheet or you can do it the math way and say `2 ^ 8`.  
+Either way, you realize 8 bytes can represent anywhere from 0 to 255
+
+An `int` is 4 bytes.  
+
+There is an [data type range MSDN page](https://learn.microsoft.com/en-us/cpp/cpp/data-type-ranges?view=msvc-170&redirectedfrom=MSDN) that covers a lot of the common data types.  
+
+
+With DllCalls, we use different sizes of memory.  
+For an `int` we use 32 bits (or 4 bytes) of memory.  
+For a `int64`, we use 64 bits (or 8 bytes) of memory.  
+Remember, a bit is the term for individual digits of a binary number.  
+
+`1010` is four bits.  
+`0001` is four bits.
+`01` is two bits.  
+
+The amount of bits is important because it dictates how many values you can represent.  
+And the amount of bits is the same as the amount of "columns" the value has.  
+
+What if we have 8 bits: `11110000`
+
+Then we have 8 columns of numbers:
+
+    128    64    32    16    8    4    2    1
+
+We can represent up to 255 different values with 8 bits (or a byte).  
+
+
+
+
+###############################
