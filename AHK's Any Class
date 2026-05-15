@@ -1,0 +1,894 @@
+Something I wrote that kind of showcases the "Any" class and why it exists.
+------------------------------------------------------------------------------------------
+
+I got kickstarted on "how would I explain the `Any` class to someone?" earlier and decided to start writing about it and that kind of turned into another AHK GroggyGuide which I haven't done in forever.
+
+This guide won't be focusing on just one topic but instead many topics that cover multiple parts of AHK v2 in an attempt to help others understand the language as a whole.  
+As a heads up: I tried to break things down and make them as understandable as possible, but there's a LOT to digest in this post and some things might not make sense.  
+If anything is too confusing, feel free to ask about it in the comments and I'll try to elaborate.  
+I want this post to be a resource for anyone wanting to learn more about *how* AHK v2 works.
+
+Things I discuss in this post:  
+
+* Everything in AHK v2 is an object (even primitives...kind of.)
+* Basics of classes and AHK's own class structure
+* The concept of inheritance  
+* Understanding the importance of the Any class and what it does
+* The "is" operator
+* Descriptor objects and all 4 descriptor types.
+
+And on that note, let's start with...
+
+# Everything in v2 is an Object!
+
+I'm sure a lot of you, at some point, have seen me say "Everything in v2 is an object", and I'm sure plenty have wondered "how can that be?"  
+
+Let's explain why.  
+
+# First, understand that in coding, an object is just a "grouping" of stuff.  
+It's meant to help organize and manage data.  
+We take an empty shell and we add properties to make it into anything we want.  
+It's a very basic but very useful concept.  
+And by creating, nesting, and organizing objects, we can make some really complex and really neat things.  
+
+You can think of an object as a container. That's how I think of it.  
+And you can put data in the container as a property or code in the container as a method.  
+BTW, methods are just properties that can be "called" and I'll prove this later.
+
+Let's take a simple example.  
+We're going to make an object called orange.  
+This object will represent an orange fruit.
+
+    orange := {}
+
+Then you can give this object the properties of an orange.  
+
+    orange := {
+        color: 0xFF8000,    ; In hex
+        circumfrence: 7,    ; In cm
+        weight: 120,        ; In grams
+    }
+
+We've taken an empty object and turned it
+It works almost like a stem cell.  
+An object can become anything you want it to become.  
+We can even expland on the object and add more information.  
+Let's add calories and vitamin content to the orange.
+
+    orange := {
+        color: 0xFF8000,    ; In hex
+        circumfrence: 7,    ; In cm
+        weight: 120,        ; In grams
+        nutrition: {        ; In grams
+            calories: 66,
+            fiber: 3,
+            sugar: 12,
+            protein: 1,
+            vitamin A: 0.00014,
+            vitamin C: 0.07,
+            potassium: 0.237,
+            carbohydrates: 15.4
+        }
+    }
+
+You now have an object that represents oranges.  
+You can get/set color, it's circumfrence, its weight, and its nutritional values.  
+You can add/remove data as needed.  
+
+It's important to understand that you only need to include data that's pertinent to your code.  
+Do you need to know how many grams of potassium an orange has?  
+If not, it's silly to include it in the object.  
+But if you were coding a video game and generating oranges, things like color and circumfrence would be important.  
+
+I do want to mention that there are some special things that can be done with objects.  
+Objects are used to make something called "descriptors".  
+It's an object with a single properties that uses a keyword like get, set, call, and value.  
+These are the building blocks of the language and these will be discussed later on.  
+
+But for the most part, understand that the point of an object is to give our code structure, to group like-things together and create things, and to allow us to pass around/work with multiple values at once.  
+
+When it comes to "the correct way to design an object", there is no *correct* way.  
+YOU design your own objects.  
+YOU use them as you see fit.  
+YOU can make them as simple or as complex as you want.  
+YOU pick the names.  
+YOU how they're structured.  
+
+Coding is pretty much LEGOs for geeks.  
+You have all the pieces you'll ever need and you can choose what you make and how you assemble it.  
+As long as it works, that's all that matters.  
+From there out, it's just optimizations. Doing things better. Making things more fault tolerant. Making things more efficient.  
+
+# Let's talk about objects and classes  
+
+The object everyone thinks of when we say "object" is the one we get from the [Object Class](https://www.autohotkey.com/docs/v2/lib/Object.htm).  
+We use these to create the structures within our code, like the fruits object from earlier.
+
+    ; Make an object
+    obj := {}
+    ; or use the object class. Same difference.
+    obj := Object()
+
+Fun fact: We're making an object from the Object class so these are *technically* Object objects. Super meta concepts! :P
+
+But there's also the object-oriented nature of AHK itself.  
+AHK is built upon classes.  
+Classes are objects designed to make other objects and provide specific functionality.  
+They're a core part of object-oriented programming (OOP) and I could easily do an **entire** GroggyGuide dedicated to Classes.  
+I might actually...  
+IDK, we'll see how this one goes.  
+(Update: Yeah, I wrote a big guide on classes that morphed into something way bigger. I still haven't published it b/c it's not technically finished and it covers WAY more than just classes...)
+
+Anyway, I'm going to reiterate this:  
+**Classes create objects!**  
+When you call a class, by default, you get an object back.  
+That's how they're designed.  
+Remember this.
+
+When we call the Array() class, we're getting an object back that's setup to be used like an array.  
+And when we call the Gui() class, we're getting an object back that stores the HWND to the newly created gui window.  
+
+But all these examples are for Objects.  
+What about primitives like strings and numbers?  
+
+Ready to have your mind blown?  
+String is a class in AHK.  
+Float is a class in AHK.  
+Integer is a class in AHK.  
+
+Now this entire section has been updated to explain how this works and to clarify some stuff that wasn't *technically* correct.  
+
+First, let's make a new string:
+
+    my_str := 'AutoHotkey'
+
+AHK is making a new spot in memory and storing the characters there like any other language would.  
+At this point the string is just a string. It's not an object.  
+
+This applies to numbers, too.
+
+   my_num := 420
+
+This is a pure number being stored in memory.  
+
+These are not *stored* as objects. They're stored as the raw primitive value that they are.  
+Even when using a class to create it, such as `my_str := String('AutoHotkey')`, it's still producing a primitive in memory.  
+
+AHK knows that `my_str` is a string primitive.  
+When you use that string, it's used as the string it is.  
+But the magic happens when we use a string or a number as an object.  
+
+Primitives don't have methods and properties. Only objects do.  
+When you try to use a primitive as an object, AHK takes that primitive, makes an object representing that string or that number, and then performs whatever is expected of it.
+
+This might be confusing so let's code it:
+
+    str := 'Hello, world!'
+
+In memory, str is a string (an array of characters...not to be confused with an AHK array).  
+But then we use it like it's an object.
+
+    MsgBox(str.HasProp('base'))
+
+`str` doesn't have any methods or properties. It's a string.  
+But the String class DOES have methods and properties.  
+AHK is making a new string object and it then copies the string into the object temporarily.  
+At this point, `str` still exists in memory, but an object representing it is also created.  
+That object is what AHK is working with in the background when it's making property and method calls. Not the actual `str` variable.  
+After it's finished using the string object, it deletes the object.  
+`str` still remains, and the user was able to successfully use the methods and/or properties they needed.
+
+This is called "wrapping". You wrap up a primitive into an object and use it even though the primitive still exists as a primitive in memory.  
+
+I didn't clarify this in the original writing of this b/c I didn't understand it as such.  
+I always thought that primitives were wrapped up as objects at all times and that's not true.  
+They get wrapped when needed and they're deleted after. It's a "temporary object". And this makes a lot of sense.
+
+And at this point, we can detail a little bit more about this topic.  
+A little while back I created a [JavaScript strings script](/1c9sa53), which gives AHK strings a lot of the same functionality as strings in JavaScript.  
+It includes adding a `length` property that can be used to tell the length of any string.  
+
+In JavaScript, to get the length of a string you'd type `my_str.Length`.  
+In AHK, you have to use the StrLen() function to do this: `StrLen(my_str)`  
+To me, the JavaScript way makes more sense.  
+This is an object-oriented language. The string should be treated like an object. And it makes sense for a string to have a `.length` property.  
+
+To add a .length property to all strings, we do this:
+
+    ; The Object prototype class has a method that allows us to define properties in objects
+    ; By default, the String class lacks this method.
+    ; We can copy the method from the Object Prototype into the String Prototype
+    String.Prototype.DefineProp := Object.Prototype.DefineProp
+
+    ; Using the new DefineProp method, we can now define properties in the String class
+    ; This means ALL strings will get access to these properties
+    ; This will allow us to give strings a "length" property
+    ; When the length property is used, it will call the StrLen function
+    ; The string itself is passed in automatically as the first paramater to the StrLen
+    String.Prototype.DefineProp('length', {get: StrLen})
+
+    ; Testing the new length property
+    ; Make a string
+    greetings := 'Hello, world!'
+
+    ; Does it work?
+    MsgBox('String contains:`n' greetings
+        '`n`nString char count:`n' greetings.length)
+
+Now if you don't understand prototypes or copying methods or what `get` means, that's OK.  
+The proof is in the MsgBox(). We know `greetings` is a string and yet we gave it a length property and it did what it was supposed to do.  
+This shows how AHK is taking a string, wrapping it into a string object, then using the methods/properties it has access to.
+
+Plus this showcases the fact AHK v2 is extremely customizable.  
+You can add, alter, or remove core properties and methods from the built-in portions of the language.  
+It doesn't lock you out like v1 did.  
+This respects the coder and allows us to custom tailor it **if we want to**.  
+
+# The [`Any` Class](https://www.autohotkey.com/docs/v2/lib/Any.htm)
+
+The [Any class](https://www.autohotkey.com/docs/v2/lib/Any.htm) is pretty important b/c it's beginning of the prototype chain for everything in AHK v2.  
+It's the default class from which everything in the language is derived from. Kind of like a "start point".  
+
+Take note that the Any class **is a class** even if we don't use it directly.  
+Its purpose is not to be used but to be inherited from.  
+
+Before I explain the Any class and the concept of inheritance, let's PROVE that everything comes from this mythical "Any class".  
+
+# Proof the Any class exists (unlike Bigfoot)
+
+First, here's a function I wrote recently that gets the inheritance chain of anything you give it.  
+It shows that EVERYTHING traces back to the Any class and shows every object that it belongs to in the prototype chain.
+
+    /**
+     * @description Extracts the full prototype chain of any given item
+     * @param item - Any item you want to get the full prototype chain from.  
+     * This is also known as an inheritance chain.  
+     * @returns {String} The object's full prototype chain.
+     */
+    get_prototype_chain(item) {
+        chain := ''                                 ; String to return with full prototype chain
+        loop                                        ; Loop through the item
+            item := item.Base                       ;   Update the current item to the class it came from
+            ,chain := item.__Class ' > ' chain      ;   Add the next class to the start of the chain
+        Until item.__Class = 'Any'                  ; Stop looping when the Any class is reached
+        Return SubStr(chain, 1, -3)                 ; Trim the extra ' > ' separator from the end of the string
+    }
+
+No matter what type of item you pass to this function, it will always result in the first class being the Any class.  
+Give it a try.  
+Pass in a string or an array or a varref or a gui.  
+
+    ; Give it a gui control
+    goo := Gui()
+    con := goo.AddButton(, 'Exit')
+
+    ; Any > Object > Gui.Control > Gui.Button
+    MsgBox(get_prototype_chain(con))
+
+    ; What about a string?
+    str := 'AutoHotkey v2!'
+
+    ; Outputs: Any > Primitive > String
+    ; While the string is a primitive, using it in this context its an object
+    ; All the string properties and methods derive from the String class
+    ; But the string itself is a basic, primitive data type in memory
+    MsgBox(get_prototype_chain(str))
+
+Everything you check will start at the `Any` class.
+
+# The `is` keyword
+
+The `is` keyword lets you check to see if a given item is part of a specified class.  
+This includes inherited classes.  
+
+It returns true whenever the item belongs to SOME class in the prototype chain.  
+In the previous section, we talked about using that function to check inheritance chains/prototype chains.  
+When using a button gui control, we got `Any > Object > Gui.Control > Gui.Button`  
+That's the full prototype chain.  
+That means a gui button control is all of those "types" of things.
+
+    ; Where con is a gui button control object
+    if (con is Gui.Button)   ; True
+    if (con is Gui.Control)  ; Also True
+    if (con is Object)       ; True as well
+    if (con is Any)          ; "is Any" is true for EVERYTHING
+
+Let's try an array this time:
+
+    ; Make an array
+    ; We're using the Array class
+    ; We could also use array syntax like arr := [1, 2, 3]
+    arr := Array(1, 2, 3)
+
+    ; Next, we check if arr "is" derived from the Array class
+    if (arr is Array)
+        ; This shows yes because arr is an Array
+        MsgBox('Yes!')
+    else MsgBox('Nope')
+
+And we can go further.  
+We know arrays come from objects so let's see if the `is` keyword confirms it:
+
+    ; Is arr also an Object?
+    if (arr is Object)
+        ; This shows yes
+        ; The object class is in the prototype chain
+        MsgBox('Yes!')
+    else MsgBox('Nope')
+
+Now that we know how to use the `is` operator, let's use it with the Any class.  
+We'll check a primitive, an object, an array, and a VarRef.
+
+    prim := 1      ; Primitive (integer)
+    obj := {}     ; Object
+    arr := [1,2]  ; Array
+    vr := &x     ; VarRef
+
+    if (prim is Any)
+        MsgBox('yes to prim')
+
+    if (obj is Any)
+        MsgBox('yes to obj')
+
+    if (arr is Any)
+        MsgBox('yes to arr')
+
+    if (vr is Any)
+        MsgBox('yes to vr')
+
+All four message boxes showed up.  
+All 4 items are of the "Any" type.  
+ALL items are of the any type.  
+
+But as a reminder, primitives are not stored as objects.  
+They're stored as the raw data they are.  
+Only when they're used as objects do they temporarily become wrapped in an object.
+
+An interesting thing to note about the Any class is that you'll most likely never reference it or use it directly.  
+It's not a callable class.  
+Its only purpose is to be inherited from or to `extend` from it.  
+And unless you're designing a new class that doesn't fall under `Object`, `Primitive`, `VarRef`, or `ComValue`, you'll never have a reason to extend from it.  
+
+Yet the Any class is the foundation of everything in v2.  
+Crazy right?
+
+# But what does the Any class *actually do* and what is inheritance?
+
+This is the million dollar question!  
+To understand the purpose of the Any class, we have to understand inheritance.  
+Understanding inheritance is a huge step in understanding object-oriented programming in general, being inheritance is one of the four pillars of OOP.  
+
+What does inheritance mean in normal life?  
+You can inherit money or items from a deceased friend or relative.  
+You inherit genes from your parents when they humpity-bump you into existence.  
+A charity can inherit goods from donators.  
+It pretty much means to receive something.  
+In programming, it means the exact same thing.  
+
+We're going to tie all this together in a second, including the Any class.  
+I promise this will make sense. 
+
+When we create new classes, you'll notice they always say something like `class MyCoolClass extends AnotherClass`.  
+This "extends" keyword and concept is what inheritance is all about.  
+Let's say we make a new class:  
+
+    class ClassB extends ClassA {
+    }
+
+We're saying "this new class should be *based* on ClassA and should inherit all of ClassA's methods and properties."  
+And some people might be thinking "why would you do that? what's the benefit?"  
+
+0Let's circle back to the `Any` class and start to tie all this together. Let's connect some dots.  
+
+The Any class has 4 methods and 1 property.  
+Let's type up a shell of what the Any class looks like so we can visualize stuff:  
+
+    ; This is the main "Any" class
+    ; Everything comes from this
+    class Any {
+        ; It comes with 4 methods
+        GetMethod() => 1
+        HasBase() => 1
+        HasMethod() => 1
+        HasProp() => 1
+
+        ; And 1 property
+        Base := 1
+    }
+
+Why these 4 methods?  
+Why the 1 property?  
+
+Look at what these methods do.  
+They allow you to check if something has a method, property, or base and allows you to get a method.  
+Property, method, and base are all object terms, right? (yes)  
+These methods are FOUNDATIONAL tools for working with objects.  
+Being everything in AHK is an object, it's a good idea that everything have access to these methods.  
+That's why they're put in the Any class. To ensure *everything* has access to these important tools.  
+These are the four main methods that every object is expected to have access to.  
+And how do they get them? By inheriting them!  
+Because everything extends from the Any class, everything **will** "inherit" these 4 methods.  
+
+I know there are dots connecting in people's minds.  
+Let's keep going.  
+
+What's up with that `Base` property?  
+Why 1 property and what does it do?  
+
+It's the only property that everything needs. Hence it being in the Any class.  
+Base tells the origin of the object, or what it's "based" upon.  
+The Object class extends from the Any class so the `Base` property of Object is going to be a direct reference to the any class.  
+
+    If (Object.Base = Any)
+        MsgBox('Base keeps track of where a class extends from.')
+
+Or think of it this way:
+
+    reference_to_any := Any
+    if (Object.Base = reference_to_any)
+        MsgBox('See? Same thing!')
+
+So what does that mean?  
+It means that the Object class (and everything it creates) has access to the stuff in the Any class.  
+Because it inherits from it.  
+
+So what does the Object class do?  
+It contains all the stuff a new object needs access to.  
+Below I've made some more shell code to represent all the methods that the Object class provides to any object instances it creates.  
+
+    ; We know that the Object class extends from Any, so let's define that:
+    class Object extends Any {
+        ; The Object class provides six methods to objects
+        Clone() => 1
+        DefineProp() => 1
+        DeleteProp() => 1
+        GetOwnPropDesc() => 1
+        HasOwnProp() => 1
+        OwnProps() => 1
+        
+        ; And 1 property
+        ; The Base is always the class extended from
+        ; Except 'Any' which is the only root class in AHK and extends from nothing
+        Base := ''
+    }
+
+Why does it add these methods?  
+Setting, getting, and deleting properties is kind of core to using an object, right?  
+That's exactly what we use objects for.  
+And this class provides the means to do all those things.  
+But a primitive object, like a string object, doesn't need to define and delete properties. That's now how they're supposed to work.  
+So the String class doesn't have these methods.  
+That also eludes to why things like DefineProp() and DeleteProp() don't exist in the Any class.  
+It's not desired to have those methods in a string or in a VarRef b/c it doesn't make sense to. It's not applicable.  
+
+But let's get back to that Object class and understand what's happening when we write `extends Any`.
+
+# The `extends` is directly tied to the concept of inheritance.  
+
+When we say "Object extends Any", we're saying that "Object is an extension of the Any class."  
+This means that along with the methods and properties defined in the Object class, it should also have access to the methods and properties from the Any class.  
+
+So let's update our code to show all the methods and properties that objects really have access to:
+
+    class Object extends Any {
+        ; New methods provided by Object class
+        Clone() => 1
+        DefineProp() => 1
+        DeleteProp() => 1
+        GetOwnPropDesc() => 1
+        HasOwnProp() => 1
+        OwnProps() => 1
+        
+        ; The Base is always the class extended from
+        Base := Any
+
+        ; Through base, we inherit the 4 methods that Any provides
+        Base.GetMethod() => 1
+        Base.HasBase() => 1
+        Base.HasMethod() => 1
+        Base.HasProp() => 1
+    }
+
+Even though the Object class only defined 6 methods, any new objects will have access to all 10 methods.  
+The 6 defined and the 4 inherited.  
+
+Let's go one step further and do the Array class.
+
+This is what the array class looks like and includes inherited items.
+
+    ; Array extends Object
+    ; That means Arrays also get Object methods
+    ; And because Object inherits from Any, that means Array inherits from Any
+    class Array extends Object {
+        ; New Array methods
+        Clone() => 1
+        Delete() => 1
+        Get() => 1
+        Has() => 1
+        InsertAt() => 1
+        Pop() => 1
+        Push() => 1
+        RemoveAt() => 1
+        __New() => 1
+        __Enum() => 1
+        
+        ; New Array properties
+        Length := 1
+        Capacity := 1
+        Default := 1
+        __Item := 1
+        
+        ; Base is always updated to the extending class
+        Base := Object
+
+        ; Methods inherited from Object
+        Base.Clone() => 1
+        Base.DefineProp() => 1
+        Base.DeleteProp() => 1
+        Base.GetOwnPropDesc() => 1
+        Base.HasOwnProp() => 1
+        Base.OwnProps() => 1
+        
+        
+        ; Methods inherited from Any
+        Base.Base.GetMethod() => 1
+        Base.Base.HasBase() => 1
+        Base.Base.HasMethod() => 1
+        Base.Base.HasProp() => 1
+    }
+
+Meaning when you make a new array, your array object will always have access to these 20 methods and 5 properties.  
+You may or may not need them, but all 20 are there and ready for use when needed.
+
+And this exemplifies the whole concept of inheritance in OOP.  
+You make a top level object and you extend other classes from it as needed.  
+
+One other little fact about the Any class: It's the only class that does not "extend" from anything.  
+And `Any.Base` is the only base that will return false because it's an empty string.  
+Every single other Class in AHK will be true because it will be associated with SOME class because everything else extends from **something**.  
+
+If you don't specify `extends` when making a class, AHK will default it to: `extends Object` because that's by far the most common thing to extend from when working with classes.  
+
+I want to do a quick tangent.  
+You guys know I like to visualize things.  
+And to quote myself from the past:
+
+> "[This page](https://www.autohotkey.com/docs/v2/ObjList.htm) is probably one of my favorite pages from the docs".  
+> ~ GroggyOtter...more or less ~
+
+This page is the Class Object List page.  
+The reason this page is so great is two-fold:  
+It visually shows the class structure of AHK v2.  
+But it also gives a link to all of AHK's classes making it a great way to quickly look up methods and properties and how to use them.  
+It acts as a hub for all the classes.  
+
+As for how it visualize
+Notice that `Any` is furthest left, making it the top level class.  
+Then there are 4 classes indented from Any: Object, Primitive, VarRef, and Comvalue.  
+That's right, AHK is pretty much made up of these four types.  
+Everything else comes from one of those four classes, with a large majority coming from the Object class.  
+EG:  
+Maps, Guis, Arrays, Error objects, InputHooks, etc. are all classes that extend from the Object class.  
+While Strings, Floats, and Integers are handled by the Primitive class.  
+
+The first time I came across this page, it helped me out a lot.  
+The more I learned about v2's structure, the more I appreciated this page.  
+To the point that it's actually my bookmark for the AHKv2 docs.  
+When I come to the docs, THIS is the page I want to start on.
+
+Now let's talk about the properties of objects and how they work.  
+This is where we're going to learn about why methods are actually a type of property.
+
+# Describing Descriptor Objects: Get, Set, Call, Value
+
+Let's discuss what a descriptor object is, how to define them, and why they're important.
+
+### What is a descriptor object?  
+
+A descriptor is an object that is used to define a property.  
+Ever wonder what the difference between a property and a method is?  
+It's the type of descriptor that's used.  
+A property that stores a value that can be changed uses a value descriptor.  
+And a property that can be called to run code uses a call descriptor.  
+
+Descriptors come in four flavors: `Get`, `Set`, `Call`, and `Value`  
+Each type of descriptor handles a different type of action.  
+I'm going to cover all four of these.  
+
+Remember earlier when I said:  
+
+> Bonus tip: Methods are just properties that can be "called" and I'll prove this later.
+
+I'm holding good to my word and we're about to show it.
+
+### How do you define/create a descriptor object?  
+Super easy.  
+To create a descriptor, you make an object, give it a keyword as a property, and assign some code to that property.  
+The keywords that can be used are:
+
+* Call
+* Get
+* Set
+* Value
+
+First, we should define what "calling" is.  
+Any time you add parentheses (and optionally parameters) to the end of something, you're calling it.  
+
+    arr := []
+    ; The Push method is being called here
+    arr.Push('hi')
+
+Functions, methods, and classes can all be called.  
+It means you add parentheses and, optionally, pass data in as parameters.  
+
+    my_str := String('Hello world')     ; Call a class
+    str_arr := StrSplit(my_str, ' ')    ; Call a function
+    MsgBox(str_arr.Pop())               ; Call a method
+
+All of these have a `Call` descriptor being used.  
+The string class has a `Call` method which is made using a call descriptor.  
+The StrSplit function has a `Call` method made using a call descriptor.  
+And the Pop method is associated with a call descriptor.  
+
+Let's create a call descriptor:
+
+    ; Create an object with a call property
+    ;  Associate a function with that property
+    desc := {call:some_func}
+
+If you were to add a property to an object and assign it that descriptor, the property would be callable...meaning you created a method.  
+
+Quick tangent: There's a rule I want to mention about call descriptors.  
+This is very important and it's core to understanding how OOP works under the hood.  
+
+The rule is: All call descriptors will pass in a reference to the object they came from as the first parameter.  
+Meaning `some_func` would need to have at least ONE parameter or AHK will throw an error.  
+
+This is just a rule of the language and there's no way to change it.  
+It's part of the structure and you have to understand it.
+
+To help, let's create a method from scratch.   
+Our method will accept 1 parameter: a message to be displayed.  
+That means the method will need to accept 2 parameters.  
+One for the object reference, and one for the message.
+
+    ; Make an object
+    ; Times used will track how many times the test() method gets used
+    obj := {times_used := 0}
+
+    ; Make a call descriptor
+    ; This will associate calling the property with a function
+    call_desc := {call:my_func}
+
+    ; Define a property in the object and call it "test"
+    ; Assign the call descriptor to that property
+    ; This creates an obj.test() method
+    obj.DefineProp('test', call_desc)
+
+    ; Let's try our new method
+    ; Call it and include a message
+    obj.test('hello, world!')
+
+    ; Part of my_func is that it increments an internal counter for how many times the Test() method is used
+    MsgBox('Number of times this object has been used: ' obj.times_used)
+
+    ; This function is what runs when obj.Test() is called
+    ; 2 parameters are included: 1 for the object self-reference and 1 for the message to be displayed
+    ; A common word to use for the first param is 'this'. It infers "this object" or the current object
+    ; When working with classes, 'this' is the keyword used for all self referencing
+    my_func(this, msg) {
+        ; 'this' is the reference to the object containing the method that uses this function
+        ; Meaning 'this' represnts 'obj' in this example
+        ; We increment the property 'times_used' by 1
+        this.times_used++
+
+        ; Then we pass the message into the message box to be displayed
+        MsgBox(msg)
+    }
+
+Another way to think of it is:
+
+    ; These two are essentially the same thing
+    obj.test('hello, world!')
+    my_func(obj, 'hello, world!')
+
+# Moving on to value descriptors
+
+Value is an easy one because it's the default behavior of all properties.  
+When you use `:=` to set a value to a property, it automatically creates the value descriptor for you.  
+
+Let's add a value normally:
+
+     ; We'd make a new object
+     obj := {}
+     ; Then assign a value to a property
+     obj.username := 'GroggyOtter'
+     ; And we can use it later
+     MsgBox(obj.username)
+
+Let's do this same process except we'll make our own value descriptor.  
+
+    ; Create a new object
+    obj := {}
+
+    ; Create a value descriptor containing 'GroggyOtter'
+    desc := {value:'GroggyOtter'}
+
+    ; Now assign that value to the object using the descriptor
+    obj.DefineProp('username', desc)
+
+    ; And use it at a later time
+    MsgBox(obj.username)
+
+This is much more work than just using the assignment operator.  
+However, this is what the assignment operator does for us in the background.  
+The assignment operator is the shortcut so we don't have to type out all of that crap each time we want to assign a property value.
+
+Going a step further, you could do this all in one line and avoid the assignment operator.  
+Because AHK syntax allows for objects to be predefined with values:
+
+    obj := {username: 'GroggyOtter'}
+
+¯\\\_(ツ)\_\/¯
+
+That covers Value and Call descriptors.
+
+# The Get and Set descriptors
+
+A Get descriptor creates a property that runs code when accessed (or "gotten").  
+This differs from value properties.  
+A value property stores data.  
+Value properties can get and set the data.  
+
+But a get descriptor runs code when "gotten" and it can't be set to something new.  
+
+    ; Create a get descriptor
+    desc := {get: test}
+    ; Make a new object
+    obj := {}
+    ; Define a new property and assign getter to it
+    obj.DefineProp('my_getter', desc)
+    ; Test it out:
+    MsgBox(obj.my_getter)
+
+    ; And then we can throw an error by assigning to it
+    ; Getters cannot be assigned to. Only a setter can.
+    obj.my_getter := 'Nope!'
+
+    test(this) => 'Test successful'
+
+That's the general idea behind "get".  
+It allows you to get something based on running some code.
+
+Let's create an example that makes a little more sense
+
+    ; Make a new user object
+    user := {}
+    
+    ; User objects will always have a first and last name
+    ; These are both value properties b/c they store a value
+    user.FirstName := 'Groggy'
+    user.LastName := 'Otter'
+    
+    ; Next, let's define a property called FullName
+    ; This property doesn't store a value
+    ; Instead, it runs code that returns a value
+    ; It "gets" something and returns it
+    user.DefineProp('FullName', {get:get_full_name})
+    
+    ; Using the FullName() getter we created
+    ; It gets and returns the first and last name from the user object
+    MsgBox('User`'s full name is: ' user.FullName)
+    
+    ; The function that handles getting a full name
+    ; Like a call descriptor, the set descriptor always sends a self-reference
+    ; This function returns the first and last name from the object passed in
+    get_full_name(this) => this.FirstName ' ' this.LastName
+
+And that leaves `Set`.  
+Set is the counterpart to Get.  
+Set descriptors run when you try to assign a value to a property.  
+
+When creating a function to work with a set descriptor, it requires 2 parameters.  
+The first parameter receives the object reference. Just like how Call and Get descriptors work.  
+But it requires a second parameter to receive whatever value was assigned.
+
+    get_func(obj, value) {
+        ; Some code
+    }
+
+Let's create a get descriptor.  
+But before I do that, I need to clarify something.  
+Earlier, I said:  
+
+> To create a descriptor, you make an object, give it a keyword as a property, and assign some code to that property.
+
+When making a descriptor, you normally only use one keyword.  
+However, `Set` and `Get` are special because they can be used together with no conflict.  
+Meaning you can have a property that runs one function when setting a value and another function when getting a value.  
+
+This is the only descriptor type that can use two keywords.  
+
+So, let's create an object that uses a Get+Set descriptor.  
+We're going to create a num property.  
+This property will use a set descriptor (setter) to ensure that whatever is assigned to the `num` property is always an integer.  
+And the num property will have a get descriptor (getter) to get and return the stored integer.
+
+    ; Make an object
+    obj := {}
+
+    ; We're going to create a _num property
+    ; _num acts as something called a backfield.
+will hold the actual number data
+    obj._num := 0
+
+    ; Next, create the descriptor
+    ; We're adding both set and get properties
+    ; We'll be fancy and do this with fat arrow functions
+    desc := {
+        ; Get is set up to return the _num value
+        get:(this) => this._num,
+        ; Set ensures that the number is always forced to integer
+        ; The integer is saved to the _num property of the object
+        set:(this, value) => this._num := Integer(value)
+    }
+
+    ; Assign the get/set descriptor to the num property
+    ; The value isn't actually stored in num.
+    ; Instead, num ensures that the number is always an integer.
+    ; It acts as a setter and getter for the real data stored in _num
+    obj.DefineProp('num', desc)
+
+    ; We attempt to assign a float to num
+    obj.num := 3.14
+
+    ; Shows: 3
+    ; Because the floating part of the number was removed
+    ; when Set property forced it to integer format
+    MsgBox(obj.num)
+
+So to recap, the 4 descriptor types are:
+
+- Value: Describes a property should contain a "value". Never used because default behavior of assigning a value.
+- Call: Makes the property callable. Meaning it's now a method.  
+  Allows you to pass in parameters. This is how methods and functions work.
+- Get: Assigns code to run when you try to get a value from a property.
+- Set: Assigns code to run when you try to set a new value to a property.
+
+***
+
+Alright, I think that's enough for now.  
+That's a lot of things to digest.  
+I was about to start a new section on prototypes but decided that'd be best saved for a Classes guide.  
+
+Did you guys learn something new?  
+Was it worth the read?  
+Should I do a GroggyGuide to classes?  
+
+If you're stuck on some part of the language or a concept or just don't understand something, ask in the comments.  
+I'll try to explain. Or maybe someone else will.
+
+And I got a few things on deck.  
+I have a big project I've been working on.  
+The v2 video series is still in the works.  
+And Peep() will be receiving it's 1.4 update sometime soon.  
+I'll post more when they're ready.
+
+***
+
+Edit add-in:  
+If you want to learn more about BoundFuncs, the Bind() method, and the ObjBindMethod() function and how all these things work, scroll down to [this comment](https://www.reddit.com/r/AutoHotkey/comments/1hvwd64/groggyguide_everything_in_v2_is_an_object/m61682y/) where a mini-guide just happened.
+
+I've got a lot of info on how these guys work and some fun code to demonstrate everything.
+
+Edit 2: [Thanks CasperHarkin](https://imgur.com/DIWglNx). This got an audible chuckle out of me.  
+The facial expression is so accurate it hurts.
+
+Edit 3: I did a HUGE update of this file.  
+I went through each line and cleaned up anything that wasn't worded well.  
+I added a few things.  
+But the big change was that I finally corrected how primitives are actually handled.  
+They **are** objects...when they need to be objects. Meaning when properties and methods of those "type" are used, AHK turns them into objects.  
+But in memory, they're stored like any other language would store a number or char(s).  
+I'd like to point out that /u/Plankoe made mention of this in one of his comments. It wasn't until later on when writing another guide that I realized how exactly primitives are handled.  
+So now I'm clarifying and acknowledging that Plankoe's comment was correct and I understand it now.  
