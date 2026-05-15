@@ -1,0 +1,315 @@
+An article that describes the transition from v1 to v2.
+---------------------------------------------------------------------------------------------
+
+;;;;;; Backup of groggyguide
+
+# For those wanting to move from v1 to v2, this post is for you.
+
+I've seen a lot of people talk about wanting to move from v1 to v2 but they don't know how.  
+
+I have a multiple things I want to go over that will help you 
+
+Everyone should understand that v2 was designed over a period of a decade. v2 isn't just about making AHK more object oriented, it's also about addressing all the flaws and shortcomings of v1.
+
+Some treat v2 like it's this super-complex language now, and it's not.  
+I would argue it's simpler and easier to use but requires a little more learning.  
+But at the core, v2 is not THAT much different from v1.  
+There is no massive learning curve to get from v1 to v2. You just have to understand a few new concepts and rules.  
+It's like when you learned v1. There were rules you just HAD to learn. And you did out of necessity.  
+V2 is the same way. Some rules are different. The structure is a bit different from v1. But a lot of what you did in v1 you're going to be doing in v2.  
+If you're smart enough to learn v1, I **guarantee** you're smart enough to learn v2.  
+
+This post is about educating people on the the differences between v1 and v2, how to transition to the latter, how to convert scripts, and provides a hub for people to ask v1 > v2 questions.
+
+Topics:  
+
+* The online docs are designed to help you convert between v1 and v2.
+* No more dual syntax. Less ambiguity.
+* Hotkeys and hotstrings use curly braces because they are functions.
+* No global labels or gosub.
+* Utilize Visual Studio + THQBY's AHK v2 addon!!
+* Tips on converting code.  
+* Errors are a good thing. Stop thinking they're bad.
+* Callbacks are too confusing.
+* Let's talk about the new classes!
+
+# - The online docs are designed to help you convert between v1 and v2.
+
+One of the big changes from v1 to v2 is that v2 doesn't use commands anymore. Everything is a function.  
+When the commands were converted to functions, most kept their same name. It's basically the same thing except write everything like a function.  
+`MsgBox` is still `MsgBox()`  
+`MouseGetPos` is still `MouseGetPos()`  
+
+There are a handful of commands that were renamed to make them more logical.  
+Such as changing v1's `URLDownloadToFile` to `Download()` in v2.  
+
+And V1 commands with subcommands, like `WinGet`, have been changed into individualized functions.  
+V1 `WinGet, List` is now `WinGetList()` and `WinGet, MinMax` is now `WinGetMinMax()`.
+
+It's pretty logical, right?  
+But how are you supposed to *know* if there's a name change?  
+
+The online docs will show you.  
+Look up your v1 command using the [online v1 docs](https://www.autohotkey.com/docs/v1/).  
+At the top of the docs page are [some buttons](https://i.imgur.com/B0NklaE.png).  
+The one in the image marked `A` is the version button.  
+This will allow you to switch between v1 and v2 equivalent pages.  
+This works v1 > v2 and v2 > v1.  
+
+Knowing about this feature of the docs is usually enough to convert basic scripts from v1 to v2.  
+It's just `Look up v1 command > click v2 version > change stuff (if needed) > go to next line`  
+The logic of the program shouldn't change.  
+You just need to follow the slightly updated rules.
+
+Bonus: In the picture from earlier, I marked a `B`.  
+That's the settings button for the site and it goes overlooked by many.  
+In there, you can set defaults for the site, including the all-important "dark mode" setting.  
+(Seriously, dark mode is better for your eyes.)
+
+# - No more dual syntax. Less ambiguity.
+
+Some people might not understand what dual syntax means.  
+Syntax means rules for something. In programming, writing something the correct way is using "correct syntax".  
+Have you ever wondered why sometimes in v1 you have to use quotes around some strings and not others?  
+Or why the meaning of percent signs change?  
+Or why we have multiple ways to assign a value?  
+
+It's because v1 has 2 types of syntax: Expression syntax and Classic syntax (aka legacy syntax).  
+v1 commands use a mix of both types and that is CONFUSING.  
+In v2, only expression syntax is used.
+
+v1 has two ways to assign values `=` and `:=`.  
+And depending on which one you use, you have to use different syntax.  
+Two different ways to achieve the same thing.  
+Worse, there are times when using `=` can have undesirable effects on your code b/c it may evaluate instead of assign or vise versa.  
+
+And don't forget about `%%` meaning different things.  
+In classic syntax, it means "use this as a variable".  
+In expression syntax, it means "dereference this variable", or, in other words, use the contents of the variable as the variable name.  
+
+    ; Classic
+    text = Hello`, world!
+    MsgBox, %text%
+
+    ; Expression
+    text := "Hello, world!"
+    MsgBox, % text
+
+All the "classic syntax" stuff is gone in v2.  
+Unlearn it.  
+v2 is expression syntax only.  
+What does that mean?  
+Pretty much the same rules as from v1 for expressions. But lets recap:
+
+* `:=` is for assigning values and `=` is used for comparison/checking if things are equal to each other.  
+
+        toggle := 1                ; Assign 1 to toggle
+        if (toggle = 1)            ; If toggle is equal to 1
+            MsgBox('Hello!')       ; Say hello
+        else my_msg := 'Goodbye!'
+        MsgBox(my_msg)
+
+* All strings (text) must have quotes around them.  
+  v2 Bonus: You can use single or double quotes for strings.  
+  Use single quotes. Your other pinky will thank you.  
+  Variables and numbers do not have quotes around them.
+
+        word1 := 'Hello'          ; Single quotes
+        word2 := "World!"         ; Double quotes
+        MsgBox(word1 " " word2)   ; " "  puts a space between the words
+
+  "But what if I need to use single quotes in the text?"  
+  Then use double quotes around the string.  
+
+        str := "v2 isn't hard to learn."
+
+  "What if I need both?"  
+  Then use a backtick to escape the quotation marks so AHK knows it's a literal quote and not the end of the string. Works with both quote types.  
+
+        ; Notice the backtick in the word isn't
+        ; This tells AHK you want a literal single quote and not end the string
+        str := 'GroggyOtter says, "v2 isn`'t hard to learn."'
+
+  Escapes are not new to v2. v1 has them as well. However, v2 added the ability to escape quotes so we don't have to use double quotes for literal quotes anymore `""`.  
+  Anyone else worth with command line and paths in v1 and end up with a huge blob of double quotes? Not a problem in v2.
+
+* Numbers and variables are typed normally.  
+
+        pi := 3.14159
+        MsgBox('The value of pi is: ' pi)
+
+  You can put numbers in strings but then it's technically a string of number characters.  
+  But AHK will still do math with it b/c it still converts string to pure numbers when appropriate.
+
+        num1 := 5
+        num2 := '4'
+        sum := num1 + num2
+        MsgBox(sum)
+
+* `%%` are used to "dereference" things.  
+  This means "use what's INSIDE the variable as the variable name".  
+  Remember that , variables are typed normally and don't use `%%` around them anymore.
+
+        ; Dereferencing example
+        var := 'Hello'
+        banana := 'var'
+        MsgBox(%banana%)  ; Is the same as MsgBox(var)
+
+   This is one of those things where you don't use until you realize you need it. So it's good to know about it.
+
+# - Hotkeys and hotstrings use curly braces because they are functions.
+
+A theme you're going to see in v2 is "everything is a function or an object".  
+In v2, hotkeys and hotstrings are now a special way to make a function.  
+That's why we need the curly braces. Just like making a normal function:
+
+    ; A normal function
+    max_restore() {
+        state := WinGetMinMax('A')  ; Get the min/max state of the window
+        if (state = 1)              ; If maximized
+            WinRestore('A')         ;   Restore the window
+        else if (state = 0)         ; else if state is normal
+            WinMaximize('A')        ;   Maximize window
+    }
+
+    ; A hotkey
+    F1:: {
+        state := WinGetMinMax('A')  ; Get the min/max state of the window
+        if (state = 1)              ; If maximized
+            WinRestore('A')         ;   Restore the window
+        else if (state = 0)         ; else if state is normal
+            WinMaximize('A')        ;   Maximize window
+    }
+
+    ; A hotstring
+    ::/max_restore:: {
+        state := WinGetMinMax('A')  ; Get the min/max state of the window
+        if (state = 1)              ; If maximized
+            WinRestore('A')         ;   Restore the window
+        else if (state = 0)         ; else if state is normal
+            WinMaximize('A')        ;   Maximize window
+    }
+
+Notice how they're pretty much identical?  
+
+You can even name them.
+
+Inline hotkeys and hotstrings are still allowed and do not require curly braces.  
+This is the same as in v1 where they don't require a return statement. It's just `hotkey::Do_Something()`
+
+    F1::WinMaximize('A')
+    :x:/winmax::WinMaximize('A')
+
+* No global labels or gosub.
+
+Global labels were removed b/c they were pretty much lesser-functions that served no real value.  
+GoSub was also removed b/c it's an antiquated way of programming and people shouldn't be using label jumps to write code. It's messy, inefficient, and becomes increasingly difficult to maintain.  
+
+Lables do still exist in v2, but their purpose is for jumping around inside of loops.  
+If you don't need to do jumps while looping through stuff, you don't need labels.  
+Use your functions (or better yet, learn to use classes! They're really powerful and make coding easier.)  
+
+# -Utilize Visual Studio + THQBY's AHK v2 addon!!
+
+This one is huge.  
+If you use [Visual Studio Code](https://code.visualstudio.com/download) and you [install THQBY's AHK v2 addon](https://i.imgur.com/tITgSnx.png), your AHK v2 coding life will become so much easier.  
+These are both free.  
+This setup will catch errors for you in real time, it tells you why it's an error so you can fix it, and it highlights *possible* problems as warnings.  
+
+If you pull a v1 script into vs code and mark it as v2, it'll tell you every single syntactical error (things written incorrectly) in the file.  
+If you have classic syntax, it'll flag it for being incorrect.  
+It knows when you're trying to use command syntax and will tell you.  
+It does a lot without you even having to ask it to.
+
+Along with all the error detection stuff, it provides every function name, built-in variable name, class/method/property name, and more.   
+While typing, you'll get an autocomplete window that uses a fuzzy search to find what you're looking for.  
+Want `WinGetMinMax`? Type `WinGetM` and you'll see it. Or get even shorter and do `wgmm` and WinGetMinMax() will be the only thing that comes up (barring any user functions of course).  
+
+Not only that, it will favor things that are in scope (accessible).  
+If what you're typing isn't in scope, it'll still suggest other spellings that it finds in the file.  
+
+The addon also keeps track of object info like properties.  
+Example: If  you make an object and it has properties `a`, `b`, and `c` in it and you go to use that object, [it'll show `a`, `b`, `c` in the autocomplete](https://i.imgur.com/lBfqlGR.png) list.  
+
+If you let it, VS Code and the ahk v2 addon will type the bulk of the characters in your code for you just from autocomplete.  
+
+VS Code itself has an insane amount of bells and whistles. So many that you'll never use them all, but they are there if you decide you want them.  
+I've also found that almost anything any other editor has, VS Code has an equivalent and they're all rebindable.  
+Example: In SciTE4AHK, ctrl+d is duplicate line and I'm very used to that hotkey.  
+It took me about 10 seconds to figure out where it was in VS Code and how to rebind it.  
+I used to use ctrl+t to flip the current line with the line below it. But VS Code lets you use alt+up and alt+down to move lines around. I no longer use ctrl+t (but the ability to flip the lines is still there!)
+
+Use VS Code when you start writing v2 code! Please please please.
+
+Bonus: I ended up creating an [enhanced definition file](https://github.com/GroggyOtter/ahkv2_definition_rewrite) for this addon that pretty much builds the entire documents into the addon...except I enhanced everything.  
+It provides more information, has hyperlinks to the document pages, suggested links, example code, better and more robust autocomplete features for individual fields, and I reworded a lot of stuff to make it more clear and understandable.  
+I suggest trying it out. You can always remove it if you don't like it.
+
+# - Errors are a good thing. Stop thinking they're bad.
+
+One complaint I see some people make is "v2 errors more often!"  
+This isn't exactly true or fair.  
+What's more accurate is "v1 lets you get away with things that it shouldn't."  
+
+I think people have an issue with errors b/c they think the interpreter is telling them they're stupid.  
+Do NOT think like that.  
+We're humans. We error ALL THE TIME. I'm extremely proficient in v2 and I easily make errors b/c we can't track things 100% of the time with 100% accuracy. It's just not feasible. It's not human-like.  
+v2 is more strict about things and it seems like it errors out more b/c it's trying to make your code more stable and more reliable.  
+
+Example: In v1, if you try to work with a window and it doesn't exist, AHK just tries and if it fails, that's that. It doesn't tell you one way or the other.  
+In v2, if you try to work with a window that doesn't exist, you get an error because the window you requested isn't there. That IS an error and AHK is notifying you about it.  
+["v2 is too strict!!! I'm going back to v1!!"](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTl3M2d5eXR0Y3V5MTEzejdzZzI2ODIzcmJvNXI1dnEwcmgwYzIydiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EpyCyEf0jwSCBa8hOA/giphy.webp)  
+v2 isn't being more difficult. It's being more thorough.  
+If you want the code to work conditionally, then you need to check for the window to exist before you act on it.  
+
+Errors show you problems or shortcomings in the code and are there to help you write better, more stable code.  
+In no way are errors a reflection of your smartness or stupidity.  
+
+# - Callbacks
+
+What even is a callback??  
+It's a function that gets called by something later on.  
+The function gets "called back" by something.  
+
+A prime example of callbacks are GUI events.  
+If you make a GUI button and you want a function to run when you click it, then you make a that function has to be able to take in the correct amount of parameters.  
+In our button click example, the callback function needs to accept 2 parameters.  
+
+    ; Example of a callback
+    goo := Gui()
+    con := goo.AddButton(, 'Hello')
+    goo.Show()
+
+    ; This is a callback
+    ; It's just a function that accepts some pre-defined parameters
+    ; Button click events need 2 parameters.
+    ; The first for a reference to the button
+    ; The second is extra info, which isn't really used with button click but still needs to be there.
+    on_click(btn_control, info) {
+        ; The code to run when the button is clicked
+        MsgBox('The button text is: ' btn_control.text)
+    }
+
+
+# - v2 gets rid of a lot of
+A
+
+# - Let's talk about the new classes in v2!
+
+First of all, [this is one of my favorite AHK doc pages]().  
+It shows the entire object structure of the language.  
+As you learn more about v2, this page makes more and more sense.  
+But it shows you all the classes.  
+
+What's a class? It's 2 things.  
+It can be a big container to store associated things or they can be used to generate objects.  
+They can be used for one, the other, or both. They're dual functioning.
+
+The AHK-provided classes lets us create "objects", or bundles, for our code.  
+An object can have properties, which act like it's own personal variables.  
+it also can have methods, which act like it's own personal variables.  
+
+Take GUIs for example.  
+In v1, there were generalized commands for making generic guis and you had to track handles or, worse, people would just use global variables as variables for gui elements.  
+Let's say you want to move a control in v1. You have to use the Control
+In v2, we make bundled packages
